@@ -2,6 +2,13 @@
 #include <stdlib.h>
 
 
+#include <libaeds/array.h>
+
+#include <libaeds/resources/resource.h>
+#include <libaeds/resources/file.h>
+#include <libaeds/resources/memory.h>
+
+
 int compare_uint(const void* a, const void* b) {
   unsigned int a1 = *(const unsigned int*) a;
   unsigned int a2 = *(const unsigned int*) b;
@@ -16,69 +23,45 @@ int main(int argc, char *argv[]) {
     return -1;
   
   
+  Allocator allocator = std_allocator(abort);
+  Resources res = new_resources(&allocator);
+  
   unsigned int* vector;
   size_t size;
   
-  FILE* input = fopen(argv[1], "r"); {
-    if (input == NULL)
-      return -2;
+  FILE* input; {
+    if (!rs_register_file(&input, argv[1], "r", rs_disposer_file(fclose_stderr), &res))
+      return delete_resources(&res), -2;
   }
   
-  FILE* output = fopen(argv[2], "w"); {
-    if (input == NULL || output == NULL) {
-      fclose(input);
-      return -2;
-    }
-  }
-  
-  
-  if (fscanf(input, "%zu", &size) != 1) {
-    fclose(input);
-    fclose(output);
-    return -3;
+  FILE* output; {
+    if (!rs_register_file(&output, argv[2], "w", rs_disposer_file(fclose_stderr), &res))
+      return delete_resources(&res), -2;
   }
   
   
-  vector = malloc(size * sizeof(unsigned int));
+  if (fscanf(input, "%zu", &size) != 1)
+    return delete_resources(&res), -3;
   
-  if (vector == NULL) {
-    fclose(input);
-    fclose(output);
-    return -4;
-  }
+  vector = rs_register_alloc(
+    allocator, size, sizeof(unsigned int),
+    rs_disposer_al(&allocator),
+    &res
+  );
   
   
-  for (size_t i = 0; i < size; i++)
-    if (fscanf(input, "%u", &vector[i]) != 1) {
-      free(vector);
-      fclose(input);
-      fclose(output);
-      return -3;
-    }
+  foreach_ix (i, 0, size)
+    if (fscanf(input, "%u", &vector[i]) != 1)
+      return delete_resources(&res), -3;
   
   
   qsort(vector, size, sizeof(unsigned int), compare_uint);
   
   
-  for (size_t i = 0; i < size; i++)
-    if (fprintf(output, "%u ", vector[i]) < 0) {
-      free(vector);
-      fclose(input);
-      fclose(output);
-      return -5;
-    }
+  foreach_ix (i, 0, size)
+    if (fprintf(output, "%u ", vector[i]) < 0)
+      return delete_resources(&res), -5;
   
   
-  free(vector);
-  
-  if (fclose(input) != 0) {
-    fclose(output);
-    return -6;
-  }
-  
-  if (fclose(output) != 0)
-    return -6;
-  
-  
-  return 0;
+  return delete_resources(&res), 0;
 }
