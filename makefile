@@ -7,7 +7,7 @@ LibAeds = $(SrcDir)/libaeds
 
 OutputFileName   = tp2
 OutputFile       = $(BinDir)/$(OutputFileName)
-CompilationUnits = $(shell find . -name '*.c')
+CompilationUnits = $(shell find $(SrcDir) -name '*.c')
 
 
 Build       = clang
