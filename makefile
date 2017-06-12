@@ -14,11 +14,13 @@ Build       = clang
 Standard    = c99
 Warnings    = -Wall -Wextra
 Optimize    = -flto -O2
+Libs        = -lm
 Debug       = -g
 
 BuildFlags  = $(Warnings)       \
               -std=$(Standard)  \
               $(Optimize)       \
+							$(Libs)		        \
               -I $(SrcDir)      \
               -o $(OutputFile)
 

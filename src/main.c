@@ -1,22 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 #include <libaeds/array.h>
-
-#include <libaeds/resources/resource.h>
+#include <libaeds/ordering.h>
+#include <libaeds/sorting.h>
 #include <libaeds/resources/file.h>
 #include <libaeds/resources/memory.h>
+#include <libaeds/resources/resource.h>
 
-
-int compare_uint(const void* a, const void* b) {
-  unsigned int a1 = *(const unsigned int*) a;
-  unsigned int a2 = *(const unsigned int*) b;
-  
-  if (a1 < a2) return -1;
-  if (a1 > a2) return 1;
-  return 0;
-}
 
 int main(int argc, char *argv[]) {
   if (argc != 3)
@@ -55,7 +46,7 @@ int main(int argc, char *argv[]) {
       return delete_resources(&res), -3;
   
   
-  qsort(vector, size, sizeof(unsigned int), compare_uint);
+  array_intro_sort(vector, size, sizeof(unsigned int), compare_uint);
   
   
   foreach_ix (i, 0, size)
