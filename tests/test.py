@@ -7,7 +7,7 @@ import tptester
 tptester.tp_test(
   'bin/tp2',
   
-  indexes = [ '4', '50k', '2500k' ],
+  indexes = [ '30', '50k', '2500k', '2500k2' ],
   input_file = lambda ix: 'tests/data/in' + ix + '.txt',
   answer_file = lambda ix: 'tests/data/out' + ix + '.txt',
   
