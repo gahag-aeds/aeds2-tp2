@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
   Allocator allocator = std_allocator(abort);
   Resources res = new_resources(&allocator);
   
-  unsigned int* vector;
+  unsigned int* array;
   size_t size;
   
   FILE* input; {
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
   if (fscanf(input, "%zu", &size) != 1)
     return delete_resources(&res), -3;
   
-  vector = rs_register_alloc(
+  array = rs_register_alloc(
     allocator, size, sizeof(unsigned int),
     rs_disposer_al(&allocator),
     &res
@@ -42,15 +42,15 @@ int main(int argc, char *argv[]) {
   
   
   foreach_ix (i, 0, size)
-    if (fscanf(input, "%u", &vector[i]) != 1)
+    if (fscanf(input, "%u", &array[i]) != 1)
       return delete_resources(&res), -3;
   
   
-  array_intro_sort(vector, size, sizeof(unsigned int), compare_uint);
+  array_intro_sort(array, size, sizeof(unsigned int), compare_uint);
   
   
   foreach_ix (i, 0, size)
-    if (fprintf(output, "%u ", vector[i]) < 0)
+    if (fprintf(output, "%u ", array[i]) < 0)
       return delete_resources(&res), -5;
   
   
