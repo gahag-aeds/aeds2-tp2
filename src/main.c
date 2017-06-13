@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <libaeds/array.h>
-#include <libaeds/ordering.h>
-#include <libaeds/sorting.h>
-#include <libaeds/resources/file.h>
-#include <libaeds/resources/memory.h>
-#include <libaeds/resources/resource.h>
+#include <libaeds/data/array.h>
+#include <libaeds/data/ordering.h>
+#include <libaeds/data/sorting.h>
+#include <libaeds/data/resources/file.h>
+#include <libaeds/data/resources/memory.h>
+#include <libaeds/data/resources/resource.h>
+#include <libaeds/memory/allocator.h>
 
 
 int main(int argc, char *argv[]) {
