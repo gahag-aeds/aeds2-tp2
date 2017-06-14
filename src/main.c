@@ -10,6 +10,26 @@
 #include <libaeds/memory/allocator.h>
 
 
+const size_t distribution_range_size = 100;
+
+unsigned long distribution_counting[distribution_range_size] = { 0 };
+
+unsigned long column_key(void* column) {
+  unsigned char* value = column;
+  return *value - 1;
+}
+
+void count_occurrences(
+  void* restrict array,
+  size_t size,
+  unsigned long (*key)(void*),
+  unsigned long* restrict keys_counting
+) {
+  foreach_ix (i, 0, size)
+    keys_counting[key(&array[i])]++;
+}
+
+
 int main(int argc, char *argv[]) {
   if (argc != 3)
     return -1;
@@ -18,7 +38,7 @@ int main(int argc, char *argv[]) {
   Allocator allocator = std_allocator(abort);
   Resources res = new_resources(&allocator);
   
-  unsigned int* array;
+  unsigned char* array;
   size_t size;
   
   FILE* input; {
@@ -36,23 +56,30 @@ int main(int argc, char *argv[]) {
     return delete_resources(&res), -3;
   
   array = rs_register_alloc(
-    allocator, size, sizeof(unsigned int),
+    allocator, size, sizeof(*array),
     rs_disposer_al(&allocator),
     &res
   );
   
   
-  foreach_ix (i, 0, size)
-    if (fscanf(input, "%u", &array[i]) != 1)
+  foreach_ix (i, 0, size) {
+    unsigned int tmp;
+    
+    if (fscanf(input, "%u", &tmp) != 1)
       return delete_resources(&res), -3;
+    
+    array[i] = tmp;
+  }
   
   
-  array_intro_sort(array, size, sizeof(unsigned int), compare_uint);
+  count_occurrences(array, size, column_key, distribution_counting);
   
   
-  foreach_ix (i, 0, size)
-    if (fprintf(output, "%u ", array[i]) < 0)
-      return delete_resources(&res), -5;
+  for (unsigned char i = 0; i < distribution_range_size; i++) {
+    while (distribution_counting[i]-- > 0)
+      if (fprintf(output, "%u ", i + 1) < 0)
+        return delete_resources(&res), -5;
+  }
   
   
   return delete_resources(&res), 0;

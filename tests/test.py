@@ -12,7 +12,7 @@ out_file = tests_dir + '/output.txt'
 tptester.tp_test(
   tests_dir + '/../bin/tp2',
   
-  indexes = [ '30', '50k', '2500k', '2500k2' ],
+  indexes = [ '30', '50k', '100k' ],
   input_file = lambda ix: tests_dir + '/data/in' + ix + '.txt',
   answer_file = lambda ix: tests_dir + '/data/out' + ix + '.txt',
   
