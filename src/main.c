@@ -2,15 +2,14 @@
 #include <stdlib.h>
 
 #include <libaeds/data/array.h>
-#include <libaeds/data/ordering.h>
-#include <libaeds/data/sorting.h>
 #include <libaeds/data/resources/file.h>
 #include <libaeds/data/resources/memory.h>
 #include <libaeds/data/resources/resource.h>
 #include <libaeds/memory/allocator.h>
 
 
-const size_t distribution_range_size = 100;
+#define distribution_range_size 100
+
 
 unsigned long distribution_counting[distribution_range_size] = { 0 };
 
@@ -19,21 +18,10 @@ unsigned long column_key(void* column) {
   return *value - 1;
 }
 
-void count_occurrences(
-  void* restrict array,
-  size_t size,
-  unsigned long (*key)(void*),
-  unsigned long* restrict keys_counting
-) {
-  foreach_ix (i, 0, size)
-    keys_counting[key(&array[i])]++;
-}
-
 
 int main(int argc, char *argv[]) {
   if (argc != 3)
     return -1;
-  
   
   Allocator allocator = std_allocator(abort);
   Resources res = new_resources(&allocator);
@@ -72,7 +60,7 @@ int main(int argc, char *argv[]) {
   }
   
   
-  count_occurrences(array, size, column_key, distribution_counting);
+  count_occurrences(array, size, sizeof(*array), column_key, distribution_counting);
   
   
   for (unsigned char i = 0; i < distribution_range_size; i++) {
