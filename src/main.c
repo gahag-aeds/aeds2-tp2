@@ -19,7 +19,7 @@ unsigned long column_key(void* column) {
 }
 
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   if (argc != 3)
     return -1;
   
@@ -60,14 +60,16 @@ int main(int argc, char *argv[]) {
   }
   
   
-  count_occurrences(array, size, sizeof(*array), column_key, distribution_counting);
+  count_occurrences( // O(n)
+    array, size, sizeof(*array),
+    column_key, distribution_counting
+  );
   
   
-  for (unsigned char i = 0; i < distribution_range_size; i++) {
+  for (unsigned char i = 0; i < distribution_range_size; i++) // O(n)
     while (distribution_counting[i]-- > 0)
       if (fprintf(output, "%u ", i + 1) < 0)
         return delete_resources(&res), -5;
-  }
   
   
   return delete_resources(&res), 0;
